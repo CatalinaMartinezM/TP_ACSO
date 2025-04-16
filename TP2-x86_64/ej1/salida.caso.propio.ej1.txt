@@ -1,0 +1,4 @@
+== Ejercicio 1a ==
+
+Creando lista vacia
+
