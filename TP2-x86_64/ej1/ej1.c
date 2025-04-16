@@ -23,6 +23,18 @@ string_proc_node* string_proc_node_create(uint8_t type, char* hash){
 }
 
 void string_proc_list_add_node(string_proc_list* list, uint8_t type, char* hash){
+	string_proc_node *node = string_proc_node_create(type, hash);
+	if (!node){ return; }
+
+	node -> previous = list -> last;
+
+	if (list -> last){
+		list -> last -> next = node;
+	} else{
+		list -> first = node;
+	}
+
+	list -> last = node;
 }
 
 char* string_proc_list_concat(string_proc_list* list, uint8_t type , char* hash){
