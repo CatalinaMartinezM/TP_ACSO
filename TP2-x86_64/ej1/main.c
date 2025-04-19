@@ -39,7 +39,7 @@ void test_create_list_add_nodes()
 
 void test_list_concat()
 {
-	string_proc_list * list	= string_proc_list_create();
+	string_proc_list * list	= string_proc_list_create_asm();
 	string_proc_list_add_node(list, 0, "hola");
 	string_proc_list_add_node(list, 0, "a");
 	string_proc_list_add_node(list, 0, "todos!");	
@@ -52,7 +52,7 @@ void test_list_concat()
  *  Crea una lista vacia y verifica que 'first' y 'last' sean NULL
  */
 void test_create_empty_list() {
-    string_proc_list* list = string_proc_list_create();
+    string_proc_list* list = string_proc_list_create_asm();
     
     if (!list) {
         printf("Fallo al crear la lista\n");
@@ -81,7 +81,7 @@ void test_create_empty_list() {
 void test_create_node() {
     char* hash = "hash";
     uint8_t type = 12;
-    string_proc_node* node = string_proc_node_create(type, hash);
+    string_proc_node* node = string_proc_node_create_asm(type, hash);
 
     if (!node) {
         printf("Fallo al crear el nodo\n");
@@ -114,8 +114,8 @@ void test_create_node() {
  *  - Los punteros 'next' y 'previous' del nodo sean NULL, ya que es el unico nodo en la lista.
  */
 void test_add_single_node() {
-    string_proc_list* list = string_proc_list_create();
-    string_proc_list_add_node(list, 1, "nodo1");
+    string_proc_list* list = string_proc_list_create_asm();
+    string_proc_list_add_node_asm(list, 1, "nodo1");
 
     if (!list -> first || !list -> last) {
         printf("Error: list -> first o list -> last son NULL\n");
@@ -138,10 +138,10 @@ void test_add_single_node() {
  *  - El ultimo nodo de la lista tenga su puntero 'next' como NULL.
  */
 void test_add_multiple_nodes() {
-    string_proc_list* list = string_proc_list_create();
-    string_proc_list_add_node(list, 1, "nodo1");
-    string_proc_list_add_node(list, 2, "nodo2");
-    string_proc_list_add_node(list, 3, "nodo3");
+    string_proc_list* list = string_proc_list_create_asm();
+    string_proc_list_add_node_asm(list, 1, "nodo1");
+    string_proc_list_add_node_asm(list, 2, "nodo2");
+    string_proc_list_add_node_asm(list, 3, "nodo3");
 
     string_proc_node* first = list -> first;
     string_proc_node* second = first ? first->next : NULL;

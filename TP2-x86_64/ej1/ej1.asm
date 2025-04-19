@@ -28,14 +28,33 @@ string_proc_list_create_asm:
     test rax, rax ; rax == NULL
     je .end
 
-    mov [rax], 0    ; list -> first = NULL
-    mov [rax+8], 0  ; list -> last  = NULL
+    mov qword [rax], 0      ; list -> first = NULL
+    mov qword [rax + 8], 0  ; list -> last  = NULL
 
     .end
     pop rbp
     ret
 
+; string_proc_node* string_proc_node_create(uint8_t type, char* hash)
 string_proc_node_create_asm:
+    push rbp
+    mov rbp, rsp
+    mov r8b, dil ; guardo type (lo recibi en rdi) para no perderlo (dps voy a reescribir rdi)
+
+    mov rdi, 32
+    call malloc
+
+    test rax, rax
+    je .end
+
+    mov qword [rax], 0
+    mov qword [rax + 8], 0
+    mov byte [rax + 16], r8b
+    mov qword [rax + 24], rsi
+
+    .end
+    pop rbp
+    ret
 
 string_proc_list_add_node_asm:
 
