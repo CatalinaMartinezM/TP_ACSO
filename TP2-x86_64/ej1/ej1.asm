@@ -16,6 +16,8 @@ global string_proc_list_concat_asm
 extern malloc
 extern free
 extern str_concat
+extern strlen
+extern strcpy
 
 ; string_proc_list* string_proc_list_create(void)
 string_proc_list_create_asm:
@@ -77,12 +79,12 @@ string_proc_list_add_node_asm:
     mov rcx, [rbx + 8]  ; rcx = list -> last
     mov [rax + 8], rcx  ; node -> previous = list -> last
 
-    mov [rcx], rax    ; list -> last -> next = node
+    mov [rcx], rax      ; list -> last -> next = node
     mov [rbx + 8], rax  ; list -> last = node
     jmp .end
 
     .isEmpty
-    mov [rbx], rax    ; list -> first = node
+    mov [rbx], rax      ; list -> first = node
     mov [rbx + 8], rax  ; list -> last  = node
     jmp .end
     
@@ -91,5 +93,53 @@ string_proc_list_add_node_asm:
     pop rbp
     ret
 
+; char* string_proc_list_concat(string_proc_list* list, uint8_t type , char* hash)
 string_proc_list_concat_asm:
+    push rbp
+    mov rbp, rsp
+    push rbx
+    push r12
+    push r13
+    push r14
+    push r15
 
+    mov rbx, rdi   ; list
+    mov r12b, sil  ; type
+
+    mov rdi, rdx ; hash
+    call strlen
+    mov rsi, rdi ; hash
+    mov rdi, rax ; strlen
+    add rdi, 1
+    call malloc
+
+    test rax, rax
+    je .end
+
+    mov rdi, rax
+    call strcpy
+    mov rdi, rax ; result
+    mov r13, rsi ; hash
+
+    mov r14, [rbx] ; currentNode
+
+    .cycle
+    cmp [r14 + 16], r12b ; currentNode -> type == type
+    jne .isFalse
+    mov rsi, [r14 + 16] ; rsi = currentNode -> type
+    call str_concat
+    mov r15, rax ; newResult
+    call free
+
+    .isFalse
+    mov r14, [r14]   ; currentNode = currentNode -> next
+    cmp qword r14, 0 ; while (currentNode)
+    jne .cycle
+
+    .end
+    pop r15
+    pop r14
+    pop r13
+    pop r12
+    pop rbx
+    ret

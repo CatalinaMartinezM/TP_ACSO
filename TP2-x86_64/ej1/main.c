@@ -40,10 +40,10 @@ void test_create_list_add_nodes()
 void test_list_concat()
 {
 	string_proc_list * list	= string_proc_list_create_asm();
-	string_proc_list_add_node(list, 0, "hola");
-	string_proc_list_add_node(list, 0, "a");
-	string_proc_list_add_node(list, 0, "todos!");	
-	char* new_hash = string_proc_list_concat(list, 0, "hash");
+	string_proc_list_add_node_asm(list, 0, "hola");
+	string_proc_list_add_node_asm(list, 0, "a");
+	string_proc_list_add_node_asm(list, 0, "todos!");	
+	char* new_hash = string_proc_list_concat_asm(list, 0, "hash");
 	string_proc_list_destroy(list);
 	free(new_hash);
 }
@@ -115,6 +115,7 @@ void test_create_node() {
  */
 void test_add_single_node() {
     string_proc_list* list = string_proc_list_create_asm();
+
     string_proc_list_add_node_asm(list, 1, "nodo1");
 
     if (!list -> first || !list -> last) {
@@ -164,6 +165,57 @@ void test_add_multiple_nodes() {
     string_proc_list_destroy(list);
 }
 
+/**
+ *  Testea casos borde para string_proc_list_concat:
+ *  - Lista vacía.
+ *  - Hash vacío.
+ *  - Strings vacíos.
+ *  - Strings con caracteres especiales.
+ */
+void test_list_concat_edge_cases() {
+    string_proc_list* list = string_proc_list_create_asm();
+
+    // Caso 1: Lista vacía
+    char* result1 = string_proc_list_concat(list, 0, "inicio");
+    if (strcmp(result1, "inicio") != 0) {
+        printf("Error: concatenación con lista vacía no devolvió el hash original\n");
+    } else {
+        printf("[OK] test_list_concat_edge_cases - lista vacía\n");
+    }
+    free(result1);
+
+    // Caso 2: Hash vacío
+    string_proc_list_add_node_asm(list, 0, "hola");
+    char* result2 = string_proc_list_concat(list, 0, "");
+    if (strcmp(result2, "hola") != 0) {
+        printf("Error: concatenación con hash vacío incorrecta (esperado 'hola', recibido '%s')\n", result2);
+    } else {
+        printf("[OK] test_list_concat_edge_cases - hash vacío\n");
+    }
+    free(result2);
+
+    // Caso 3: Nodo con string vacío
+    string_proc_list_add_node_asm(list, 0, "");
+    char* result3 = string_proc_list_concat(list, 0, "inicio");
+    if (strcmp(result3, "iniciohola") != 0) {
+        printf("Error: concatenación con nodo vacío incorrecta (esperado 'iniciohola', recibido '%s')\n", result3);
+    } else {
+        printf("[OK] test_list_concat_edge_cases - string vacío\n");
+    }
+    free(result3);
+
+    // Caso 4: Nodo con caracteres especiales
+    string_proc_list_add_node_asm(list, 0, "!@#");
+    char* result4 = string_proc_list_concat(list, 0, "X");
+    if (strcmp(result4, "Xhola!@#") != 0) {
+        printf("Error: concatenación con caracteres especiales incorrecta (esperado 'Xhola!@#', recibido '%s')\n", result4);
+    } else {
+        printf("[OK] test_list_concat_edge_cases - caracteres especiales\n");
+    }
+    free(result4);
+
+    string_proc_list_destroy(list);
+}
 
 /**
 * Corre los test a se escritos por lxs alumnxs	
@@ -178,6 +230,8 @@ void run_tests(){
 	test_add_single_node();
 
 	test_add_multiple_nodes();
+
+    test_list_concat_edge_cases();
 
 	test_create_destroy_list();
 
