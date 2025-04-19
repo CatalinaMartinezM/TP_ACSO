@@ -56,46 +56,40 @@ string_proc_node_create_asm:
     pop rbp
     ret
 
-; string_proc_list_add_node(string_proc_list* list, uint8_t type, char* hash)
+; void string_proc_list_add_node_asm(string_proc_list* list, uint8_t type, char* hash)
 string_proc_list_add_node_asm:
     push rbp
     mov rbp, rsp
-    mov r8, rdi   ; list
-    mov r9b, sil  ; type
-    mov r10, rdx  ; hash
+    push rbx
     
-    movzx rdi, sil ; type
-    mov rsi, rdx   ; hash
+    mov rbx, rdi    ; list
+    
+    movzx rdi, sil  ; type
+    mov rsi, rdx    ; hash
     call string_proc_node_create_asm
-
-    test rax, rax
+    
+    test rax, rax  ; rax = node
     je .end
-
-    mov r9, rax
-
-    test r8, r8 ; list == NULL?
-    je .end
-
-    ;mov r11, [r8 + 8] ; r11 = list -> last
-    ;test r11, r11           ; list -> last == NULL?
-    cmp qword [r8], 0
+    
+    cmp qword [rbx], 0  ; list -> first == NULL?
     je .isEmpty
+    
+    mov rcx, [rbx + 8]  ; rcx = list -> last
+    mov [rax + 8], rcx  ; node -> previous = list -> last
 
-    mov r11, [r8 + 8] ; r11 = list -> last
-    mov qword [rax + 8], r11 ; node -> previous = list -> last
-    mov qword [r11], rax     ; list -> last -> next = node;
-
-    mov qword [r11], rax ; list -> last  = node
+    mov [rcx], rax    ; list -> last -> next = node
+    mov [rbx + 8], rax  ; list -> last = node
     jmp .end
 
     .isEmpty
-    mov [r8], r9  ; list -> first = node
-    mov [r8 + 8], r9 ; list -> last  = node
-
-    .end
+    mov [rbx], rax    ; list -> first = node
+    mov [rbx + 8], rax  ; list -> last  = node
+    jmp .end
+    
+    .end:
+    pop rbx
     pop rbp
     ret
-
 
 string_proc_list_concat_asm:
 
