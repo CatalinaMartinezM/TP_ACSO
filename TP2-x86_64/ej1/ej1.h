@@ -6,7 +6,6 @@
 #include <stdbool.h>
 
 #define USE_ASM_IMPL 1
-//1 para C; 0 para Assembler
 
 /** Lista **/
 typedef struct string_proc_list_t {

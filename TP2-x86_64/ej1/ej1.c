@@ -1,18 +1,20 @@
 #include "ej1.h"
 
 string_proc_list* string_proc_list_create(void){
-	string_proc_list *list = (string_proc_list*)malloc(sizeof(struct string_proc_list_t));
-	if (!list) return NULL;
+	string_proc_list* list = (string_proc_list*)malloc(sizeof(string_proc_list));
+	if (!list) { 
+		return NULL; 
+	}
 
 	list -> first = NULL;
     list -> last  = NULL;
-
+	
     return list;
 }
 
 string_proc_node* string_proc_node_create(uint8_t type, char* hash){
-	string_proc_node *node = (string_proc_node*)malloc(sizeof(struct string_proc_node_t));
-	if (!node) return NULL;
+	string_proc_node* node = (string_proc_node*)malloc(sizeof(string_proc_node));
+	if (!node) { return NULL; }
 
 	node -> next     = NULL;
     node -> previous = NULL;
@@ -23,7 +25,7 @@ string_proc_node* string_proc_node_create(uint8_t type, char* hash){
 }
 
 void string_proc_list_add_node(string_proc_list* list, uint8_t type, char* hash){
-	string_proc_node *node = string_proc_node_create(type, hash);
+	string_proc_node* node = string_proc_node_create(type, hash);
 	if (!node){ return; }
 
 	node -> previous = list -> last;
@@ -106,4 +108,3 @@ void string_proc_list_print(string_proc_list* list, FILE* file){
                 current_node = current_node->next;
         }
 }
-

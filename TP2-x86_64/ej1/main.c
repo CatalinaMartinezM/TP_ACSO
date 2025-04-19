@@ -165,7 +165,6 @@ void test_add_multiple_nodes() {
 }
 
 
-
 /**
 * Corre los test a se escritos por lxs alumnxs	
 */
@@ -180,13 +179,13 @@ void run_tests(){
 
 	test_add_multiple_nodes();
 
-	// test_create_destroy_list();
+	test_create_destroy_list();
 
-	// test_create_destroy_node();
+	test_create_destroy_node();
 
-	// test_create_list_add_nodes();
+	test_create_list_add_nodes();
 
-	// test_list_concat();
+	test_list_concat();
 }
 
 int main (void){
