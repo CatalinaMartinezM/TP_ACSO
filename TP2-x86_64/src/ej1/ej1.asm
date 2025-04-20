@@ -16,8 +16,7 @@ global string_proc_list_concat_asm
 extern malloc
 extern free
 extern str_concat
-extern my_strlen
-extern my_strcpy
+extern strdup
 
 ; string_proc_list* string_proc_list_create(void)
 string_proc_list_create_asm:
@@ -34,8 +33,8 @@ string_proc_list_create_asm:
     mov qword [rax + 8], 0  ; list -> last  = NULL
 
     .end
-    pop rbp
-    ret
+        pop rbp
+        ret
 
 ; string_proc_node* string_proc_node_create(uint8_t type, char* hash)
 string_proc_node_create_asm:
@@ -55,8 +54,8 @@ string_proc_node_create_asm:
     mov qword [rax + 24], rsi
 
     .end
-    pop rbp
-    ret
+        pop rbp
+        ret
 
 ; void string_proc_list_add_node_asm(string_proc_list* list, uint8_t type, char* hash)
 string_proc_list_add_node_asm:
@@ -84,14 +83,14 @@ string_proc_list_add_node_asm:
     jmp .end
 
     .isEmpty
-    mov [rbx], rax      ; list -> first = node
-    mov [rbx + 8], rax  ; list -> last  = node
-    jmp .end
+        mov [rbx], rax      ; list -> first = node
+        mov [rbx + 8], rax  ; list -> last  = node
+        jmp .end
     
     .end:
-    pop rbx
-    pop rbp
-    ret
+        pop rbx
+        pop rbp
+        ret
 
 ; char* string_proc_list_concat(string_proc_list* list, uint8_t type , char* hash)
 string_proc_list_concat_asm:
@@ -107,46 +106,46 @@ string_proc_list_concat_asm:
     mov r12b, sil  ; type
     mov r13, rdx   ; hash
 
-    mov rdi, r13 ; hash
-    call my_strlen
-    mov rdi, rax ; strlen
-    add rdi, 1
-    call malloc
-
+    mov rdi, r13
+    call strdup
     test rax, rax
     je .end
+    mov r15, rax
 
-    mov r14, rax ; rax = result
+    mov r14, [rbx]     ; currentNode = list -> first
 
-    mov rdi, r14
-    mov rsi, r13 ; hash
-    call my_strcpy
+    .cycle:
+        test r14, r14
+        je .end
 
-    mov r14, [rbx] ; currentNode
-    mov r15, rax ; result
+        cmp byte [r14 + 16], r12b ; currentNode -> type == type
+        jne .isFalse
 
-    .cycle
-    cmp byte [r14 + 16], r12b ; currentNode -> type == type
-    jne .isFalse
-    mov rdi, r15
-    mov rsi, [r14 + 24] ; rsi = currentNode -> hash
-    call str_concat
+        mov rdi, r15
+        mov rsi, [r14 + 24] ; rsi = currentNode->hash
+        call str_concat
+        test rax, rax
+        je .error
 
-    test rax, rax
-    je .end
+        mov rdi, r15
+        mov r15, rax
+        call free
 
-    mov rbx, rax ; newResult
-    ;call free
+    .isFalse:
+        mov r14, [r14] ; currentNode = currentNode->next
+        jmp .cycle
 
-    .isFalse
-    mov r14, [r14]   ; currentNode = currentNode -> next
-    cmp qword r14, 0 ; while (currentNode)
-    jne .cycle
+    .error:
+        mov rdi, r15
+        call free
+        xor r15, r15
 
-    .end
-    pop r15
-    pop r14
-    pop r13
-    pop r12
-    pop rbx
-    ret
+    .end:
+        mov rax, r15
+        pop r15
+        pop r14
+        pop r13
+        pop r12
+        pop rbx
+        pop rbp
+        ret
