@@ -22,4 +22,16 @@ int inode_indexlookup(struct unixfilesystem *fs, struct inode *inp, int blockNum
  */
 int inode_getsize(struct inode *inp);
 
+/**
+ * Checks if the inode is a directory based on i_mode IFMT bits
+ * Returns 1 if it's a directory, 0 otherwise
+ */
+int inode_isdir(struct inode *inp);
+
+/**
+ * Checks if the inode is a regular file based on i_mode IFMT bits
+ * Returns 1 if it's a regular file, 0 otherwise
+ */
+int inode_isreg(struct inode *inp);
+
 #endif // _INODE_
