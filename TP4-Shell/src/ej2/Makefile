@@ -1,13 +1,14 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c11
-
+CFLAGS = -Wall -Wextra -std=c99
 TARGET = shell
-SRC = shell.c
+SOURCE = shell.c
 
 all: $(TARGET)
 
-$(TARGET): $(SRC)
-	$(CC) $(CFLAGS) -o $@ $^
+$(TARGET): $(SOURCE)
+	$(CC) $(CFLAGS) -o $(TARGET) $(SOURCE)
 
 clean:
 	rm -f $(TARGET)
+
+.PHONY: all clean 
